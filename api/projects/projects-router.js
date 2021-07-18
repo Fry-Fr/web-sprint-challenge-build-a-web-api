@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Projects = require('./projects-model');
+const { validateRequest } = require('./projects-middleware');
 
 router.get('/', async (req, res, next) => {
     await Projects.get()
@@ -23,25 +24,25 @@ router.get('/:id', async (req, res, next) => {
         .catch(err => next(err))
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', validateRequest, async (req, res, next) => {
     const newPost = req.body;
     await Projects.insert(newPost)
         .then(newProject => {
             newProject
             ? res.status(201).json(newProject)
-            : res.status(400).json({ message: "bad request" })
+            : next()
         })
         .catch(err => next(err))
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validateRequest, async (req, res, next) => {
     const { id } = req.params;
     const changes = req.body;
     await Projects.update(id, changes)
         .then(updatedProj => {
             updatedProj
             ? res.status(200).json(updatedProj)
-            : res.status(404).json({ message: `Project ID ${id} not found` })
+            : next();
         })
         .catch(err => next(err))
 });

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Actions = require('./actions-model');
+const { validateRequest } = require('./actions-middlware');
 
 router.get('/', async (req, res, next) => {
     await Actions.get()
@@ -23,25 +24,25 @@ router.get('/:id', async (req, res, next) => {
         .catch(err => next(err))
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/', validateRequest, async (req, res, next) => {
     const newPost = req.body;
     await Actions.insert(newPost)
         .then(newAction => {
             newAction
             ? res.status(201).json(newAction)
-            : res.status(400).json({ message: "bad request" })
+            : next()
         })
         .catch(err => next(err))
 });
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', validateRequest, async (req, res, next) => {
     const { id } = req.params;
     const changes = req.body;
     await Actions.update(id, changes)
         .then(updatedActions => {
             updatedActions
             ? res.status(200).json(updatedActions)
-            : res.status(404).json({ message: `Action with ID ${id} not found` })
+            : next()
         })
         .catch(err => next(err))
 });
