@@ -42,7 +42,7 @@ router.put('/:id', validateRequest, async (req, res, next) => {
         .then(updatedProj => {
             updatedProj
             ? res.status(200).json(updatedProj)
-            : next();
+            : next()
         })
         .catch(err => next(err))
 });
@@ -54,6 +54,17 @@ router.delete('/:id', async (req, res, next) => {
             delProj
             ? res.status(200).json(delProj)
             : res.status(404).json({ message: `Project with ID ${id} not found` })
+        })
+        .catch(err => next(err))
+});
+
+router.get('/:id/actions', async (req, res, next) => {
+    const { id } = req.params;
+    await Projects.getProjectActions(id)
+        .then(actions => {
+            actions
+            ? res.status(200).json(actions)
+            : next()
         })
         .catch(err => next(err))
 });

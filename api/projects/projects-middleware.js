@@ -10,9 +10,11 @@ function validateRequest(req, res, next) {
         }
         next();
     }else if (method === "PUT") {
-        if (!req.body.name || !req.body.description || !req.body.completed) {
+        if (!req.body.name || !req.body.description) {
             res.status(400).json({ message: "missing required field" })
         }
+        next()
+    }else {
         next();
     }
 }
